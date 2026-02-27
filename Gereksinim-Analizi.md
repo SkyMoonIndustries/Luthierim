@@ -30,5 +30,5 @@
 # Gereksinim Dağılımları
 
 1. [Gökay Uysal'ın Gereksinimleri](Gökay-Uysal/Gökay-Uysal-Gereksinimler.md)
-2. [Halil Ergün'ün Gereksinimleri](Grup-Uyesi-2/Grup-Uyesi-2-Gereksinimler.md)
+2. [Halil Ergün'ün Gereksinimleri](Halil-Ergün/Halil-Ergün-Gereksinimler.md)
 3. [Mustafa Yiğit Emet'in Gereksinimleri](Grup-Uyesi-3/Grup-Uyesi-3-Gereksinimler.md)
