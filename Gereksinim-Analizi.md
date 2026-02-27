@@ -1,36 +1,34 @@
 # Gereksinim Analizi
 
-Tüm gereksinimlerinizi çıkardıktan sonra beraber tartışıyoruz ve son gereksinimlerin isimlerini hangi API metoduna karşılık geleceğini ve kısa açıklamalarını buraya numaralı bir şekilde yazıyorsunuz. Daha sonra aşağıya herkes kendi gereksinimiyle ilgili sayfayı oluşturmalı ve kendi sayfasında kendine ait gereksinimleri numaralı bir şekilde listeleyerek her bir gereksinimin açıklamalarını yazmalı. Toplamda grup üyesi sayısı kadar sayfa oluşturulmalı. Her grup üyesine eşit sayıda gereksinim atanmalı.
-
-## Gereksinim Sayıları (En Az)
-
-- **1 Kişi:** 10 gereksinim
-- **2 Kişi:** 16 gereksinim
-- **3 Kişi:** 21 gereksinim
-- **4 Kişi:** 24 gereksinim
-- **5 Kişi:** 30 gereksinim
-
-## Gereksinimlerde Uyulması Gereken Kurallar
-
-1. **İsimler anlamlı olmalı:** Gereksinim isimleri net ve anlaşılır olmalıdır.
-2. **Açıklamalar net olmalı:** Her gereksinimin açıklaması açık ve anlaşılır şekilde yazılmalıdır.
-3. **Açıklamalar teknik jargon ve kısaltmalar içermemeli:** Gereksinim açıklamaları herkesin anlayabileceği basit bir dille yazılmalıdır.
-4. **Gereksinim isimleri çok uzun olmamalı ve bir eylem bildirmeli:** 
-   - İsimler kısa ve öz olmalıdır
-   - Bir eylem fiili içermelidir
-   - Örnekler: "Kayıt Olma", "Giriş Yapma", "Profil Güncelleme", "Hesap Silme"
-
 # Tüm Gereksinimler 
 
-1. **Giriş Yapma** (Ali Tutar)
-2. **Üye Olma** (Ali Tutar)
-3. ..
-4. ..
+1. **Müşteri Hesabı Oluşturma** (Mustafa Yiğit Emet)
+2. **Müşteri Bilgilerini Güncelleme** (Mustafa Yiğit Emet)
+3. **Müşteri Hesabını Silme** (Mustafa Yiğit Emet)
+4. **Müşteri Enstrümanlarını Listeleme** (Mustafa Yiğit Emet)
+5. **Yeni Enstrüman Ekleme** (Mustafa Yiğit Emet)
+6. **Enstrüman Detaylarını Güncelleme** (Mustafa Yiğit Emet)
+7. **Enstrüman Kaydını Silme** (Mustafa Yiğit Emet)
+8. **Akıllı Donanım Tavsiyesi Alma** (Mustafa Yiğit Emet)
+9. **Yeni Ürün Ekleme** (Gökay Uysal)
+10. **Ürün Bilgilerini Güncelleme** (Gökay Uysal)
+11. **Ürünü Yayından Kaldırma** (Gökay Uysal)
+12. **Satıştaki Ürünleri Listeleme** (Gökay Uysal)
+13. **Sepete Ürün Ekleme** (Gökay Uysal)
+14. **Sepetten Ürün Çıkarma** (Gökay Uysal)
+15. **Sepetteki Ürünleri Listeleme** (Gökay Uysal)
+16. **Görselden Yedek Parça Bulma** (Gökay Uysal)
+17. **Bakım Randevusu Alma** (Halil Ergün)
+18. **Randevu Zamanını Erteleme** (Halil Ergün)
+19. **Randevu İptal Etme** (Halil Ergün)
+20. **Aktif Randevuları Listeleme** (Halil Ergün)
+21. **Bakım Geçmişi Kaydı Oluşturma** (Halil Ergün)
+22. **Bakım Notlarını Güncelleme** (Halil Ergün)
+23. **Tamamlanan Bakımları Listeleme** (Halil Ergün)
+24. **Akıllı Bakım Zamanı Tahmin Etme** (Halil Ergün)
+
 # Gereksinim Dağılımları
 
-1. [Ali Tutar'ın Gereksinimleri](Ali-Tutar/Ali-Tutar-Gereksinimler.md)
-2. [Grup Üyesi 2'nin Gereksinimleri](Grup-Uyesi-2/Grup-Uyesi-2-Gereksinimler.md)
-3. [Grup Üyesi 3'ün Gereksinimleri](Grup-Uyesi-3/Grup-Uyesi-3-Gereksinimler.md)
-4. [Grup Üyesi 4'ün Gereksinimleri](Grup-Uyesi-4/Grup-Uyesi-4-Gereksinimler.md)
-5. [Grup Üyesi 5'in Gereksinimleri](Grup-Uyesi-5/Grup-Uyesi-5-Gereksinimler.md)
-6. [Grup Üyesi 6'nın Gereksinimleri](Grup-Uyesi-6/Grup-Uyesi-6-Gereksinimler.md)
+1. [Gökay Uysal'ın Gereksinimleri](Gökay-Uysal/Gökay-Uysal-Gereksinimler.md)
+2. [Halil Ergün'ün Gereksinimleri](Grup-Uyesi-2/Grup-Uyesi-2-Gereksinimler.md)
+3. [Mustafa Yiğit Emet'in Gereksinimleri](Grup-Uyesi-3/Grup-Uyesi-3-Gereksinimler.md)
