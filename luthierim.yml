@@ -1,0 +1,1194 @@
+openapi: 3.0.3
+info:
+  title: Luthierim API
+  description: Luthierler ve müzisyenleri bir araya getiren entegre e-ticaret ve bakım takip platformu REST API dokümantasyonu.
+  version: 1.0.0
+  contact:
+    name: Balıkhane Ekibi
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Yerel Geliştirme Sunucusu (Development)
+  - url: https://api.luthierim.com/v1
+    description: Üretim Sunucusu (Production)
+
+tags:
+  - name: Müşteri Yönetimi
+    description: Müşteri hesapları ile ilgili işlemler (Mustafa)
+  - name: Enstrüman Yönetimi
+    description: Müşterilerin enstrüman kayıtları (Mustafa)
+  - name: Mağaza Yönetimi
+    description: Luthier ekipmanlarının yönetimi (Gökay)
+  - name: Sipariş Yönetimi
+    description: Alışveriş sepeti yönetimi (Gökay)
+  - name: Randevu Yönetimi
+    description: Bakım randevularının yönetimi (Halil)
+  - name: Bakım Yönetimi
+    description: Geçmiş bakım kayıtlarının takibi (Halil)
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ==========================================
+  # MUSTAFA'NIN GÖREVLERİ (1-8)
+  # ==========================================
+  /customers/register:
+    post:
+      tags:
+        - Müşteri Yönetimi
+      summary: Müşteri Hesabı Oluşturma
+      description: Sisteme yeni katılacak kullanıcıların kişisel bilgilerini girerek profillerini oluşturmalarını sağlar.
+      operationId: registerCustomer
+      security: [] 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerInput'
+      responses:
+        '201':
+          description: Müşteri başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /customers/{customerId}:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        description: İşlem yapılacak müşterinin benzersiz ID'si
+        schema:
+          type: integer
+          
+    put:
+      tags:
+        - Müşteri Yönetimi
+      summary: Müşteri Bilgilerini Güncelleme
+      description: Kayıtlı kullanıcının kişisel bilgilerini sonradan değiştirmesini sağlar.
+      operationId: updateCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerInput'
+      responses:
+        '200':
+          description: Müşteri bilgileri güncellendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Müşteri bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      tags:
+        - Müşteri Yönetimi
+      summary: Müşteri Hesabını Silme
+      description: Kullanıcının kendi isteğiyle platformdaki kaydını tamamen kaldırmasını sağlar.
+      operationId: deleteCustomer
+      responses:
+        '204':
+          description: Müşteri başarıyla silindi
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Müşteri bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /customers/{customerId}/instruments:
+    parameters:
+      - name: customerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          
+    get:
+      tags:
+        - Enstrüman Yönetimi
+      summary: Müşteri Enstrümanlarını Listeleme
+      description: Kullanıcının bakım geçmişini takip etmek amacıyla sisteme kaydettiği gitarlarını listeler.
+      operationId: getCustomerInstruments
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Enstrüman listesi başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instrument'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Müşteri bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Enstrüman Yönetimi
+      summary: Yeni Enstrüman Ekleme
+      description: Kullanıcının sahip olduğu yeni bir gitarı profiline eklemesini sağlar.
+      operationId: addInstrumentToCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentInput'
+      responses:
+        '201':
+          description: Enstrüman başarıyla eklendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Müşteri bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /instruments/{instrumentId}:
+    parameters:
+      - name: instrumentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          
+    put:
+      tags:
+        - Enstrüman Yönetimi
+      summary: Enstrüman Detaylarını Güncelleme
+      description: Sisteme kayıtlı bir enstrümanın model veya üretim yılı gibi detaylarının değiştirilmesini sağlar.
+      operationId: updateInstrument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstrumentInput'
+      responses:
+        '200':
+          description: Enstrüman başarıyla güncellendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Enstrüman bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      tags:
+        - Enstrüman Yönetimi
+      summary: Enstrüman Kaydını Silme
+      description: Kullanıcının sistemde takip etmek istemediği bir enstrümanı kaldırmasını sağlar.
+      operationId: deleteInstrument
+      responses:
+        '204':
+          description: Enstrüman başarıyla silindi
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Enstrüman bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /instruments/{instrumentId}/recommendations:
+    post:
+      tags:
+        - Enstrüman Yönetimi
+      summary: Akıllı Donanım Tavsiyesi Alma [YAPAY ZEKA]
+      description: Sistemin yapay zeka analizi ile enstrümana en uygun tel, manyetik veya efekt pedallarını önermesini sağlar.
+      operationId: getSmartRecommendations
+      parameters:
+        - name: instrumentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                musicGenre:
+                  type: string
+                  example: "Metal"
+      responses:
+        '200':
+          description: Yapay zeka tavsiyeleri başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "Ernie Ball Skinny Top Heavy Bottom Tel"
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Enstrüman bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==========================================
+  # GÖKAY'IN GÖREVLERİ (9-16)
+  # ==========================================
+  /products:
+    get:
+      tags:
+        - Mağaza Yönetimi
+      summary: Satıştaki Ürünleri Listeleme
+      description: Müşterilerin mağazada satışta olan tüm gitar parçalarını ve ekipmanlarını görüntülemesini sağlar.
+      operationId: listProducts
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Ürünler başarıyla listelendi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Mağaza Yönetimi
+      summary: Yeni Ürün Ekleme
+      description: Luthierin satmak istediği yeni donanım veya ekipmanları mağaza vitrinine eklemesini sağlar.
+      operationId: addProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Ürün başarıyla eklendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/{productId}:
+    parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: integer
+          
+    put:
+      tags:
+        - Mağaza Yönetimi
+      summary: Ürün Bilgilerini Güncelleme
+      description: Mağazadaki mevcut bir ürünün fiyatı veya stok durumu gibi detaylarının değiştirilmesini sağlar.
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Ürün güncellendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ürün bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      tags:
+        - Mağaza Yönetimi
+      summary: Ürünü Yayından Kaldırma
+      description: Satıştan kaldırılmak istenen bir ürünün mağaza vitrininden tamamen silinmesini sağlar.
+      operationId: deleteProduct
+      responses:
+        '204':
+          description: Ürün silindi
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ürün bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /cart/items:
+    get:
+      tags:
+        - Sipariş Yönetimi
+      summary: Sepetteki Ürünleri Listeleme
+      description: Müşterinin alışverişi tamamlamadan önce sepetine eklediği ürünlerin toplamını görüntülemesini sağlar.
+      operationId: getCartItems
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Sepet getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartItem'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Sipariş Yönetimi
+      summary: Sepete Ürün Ekleme
+      description: Müşterinin satın almak istediği ürünü alışveriş sepetine atması işlemidir.
+      operationId: addProductToCart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemInput'
+      responses:
+        '201':
+          description: Ürün sepete eklendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /cart/items/{itemId}:
+    delete:
+      tags:
+        - Sipariş Yönetimi
+      summary: Sepetten Ürün Çıkarma
+      description: Müşterinin almaktan vazgeçtiği ürünü sepetinden iptal etmesi işlemidir.
+      operationId: removeProductFromCart
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Ürün sepetten çıkarıldı
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ürün sepetinizde bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products/search/image:
+    post:
+      tags:
+        - Mağaza Yönetimi
+      summary: Görselden Yedek Parça Bulma [YAPAY ZEKA]
+      description: Müşterinin aradığı donanımın fotoğrafını yükleyerek mağazadaki benzer ürünleri bulmasını sağlar.
+      operationId: searchProductByImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Eşleşen ürünler bulundu
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Geçersiz dosya formatı veya yükleme hatası
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==========================================
+  # HALİL'İN GÖREVLERİ (17-24)
+  # ==========================================
+  /appointments:
+    post:
+      tags:
+        - Randevu Yönetimi
+      summary: Bakım Randevusu Alma
+      description: Müşterinin, enstrümanının bakımı veya tamiri için luthierden tarih talep etmesi işlemidir.
+      operationId: createAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentInput'
+      responses:
+        '201':
+          description: Randevu başarıyla oluşturuldu
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /appointments/active:
+    get:
+      tags:
+        - Randevu Yönetimi
+      summary: Aktif Randevuları Listeleme
+      description: Luthierin yaklaşan tüm tamir işlerini takvim üzerinde görüntülemesi işlemidir.
+      operationId: listActiveAppointments
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Aktif randevular listelendi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /appointments/{appointmentId}:
+    parameters:
+      - name: appointmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          
+    put:
+      tags:
+        - Randevu Yönetimi
+      summary: Randevu Zamanını Erteleme
+      description: Alınmış bir randevunun tarihinin veya saatinin değiştirilmesi işlemidir.
+      operationId: postponeAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newDate:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Randevu ertelendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Randevu bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      tags:
+        - Randevu Yönetimi
+      summary: Randevu İptal Etme
+      description: Oluşturulmuş bir bakım randevusunun iptal edilip silinmesi işlemidir.
+      operationId: cancelAppointment
+      responses:
+        '204':
+          description: Randevu iptal edildi
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Randevu bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /maintenance-records:
+    get:
+      tags:
+        - Bakım Yönetimi
+      summary: Tamamlanan Bakımları Listeleme
+      description: Müşterinin kendi gitarına geçmişte yapılan işlemleri görüntülemesi işlemidir.
+      operationId: listMaintenanceRecords
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Bakım kayıtları getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaintenanceRecord'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      tags:
+        - Bakım Yönetimi
+      summary: Bakım Geçmişi Kaydı Oluşturma
+      description: Luthierin işlemi biten gitar için sisteme geçmiş notu düşmesi işlemidir.
+      operationId: createMaintenanceRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceRecordInput'
+      responses:
+        '201':
+          description: Bakım kaydı oluşturuldu
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /maintenance-records/{recordId}:
+    put:
+      tags:
+        - Bakım Yönetimi
+      summary: Bakım Notlarını Güncelleme
+      description: Luthierin daha önce girdiği bir tamir işlemindeki eksik notları sonradan düzeltmesi işlemidir.
+      operationId: updateMaintenanceRecord
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceRecordInput'
+      responses:
+        '200':
+          description: Bakım notu güncellendi
+        '400':
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Kayıt bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /instruments/{instrumentId}/maintenance-prediction:
+    get:
+      tags:
+        - Bakım Yönetimi
+      summary: Akıllı Bakım Zamanı Tahmin Etme [YAPAY ZEKA]
+      description: Sistemin, kullanıcının çalma sıklığına bakarak bir sonraki bakım zamanını akıllı bir şekilde tahmin etmesi işlemidir.
+      operationId: predictMaintenance
+      parameters:
+        - name: instrumentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Bakım tahmini üretildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictionResult'
+        '401':
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Enstrüman bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'JWT tabanlı kimlik doğrulama. İstek başlığına "Authorization: Bearer <token>" eklenmeli.'
+
+  schemas:
+    Customer:
+      type: object
+      required: [id, name, email]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: "Mustafa Yiğit Emet"
+        email:
+          type: string
+          format: email
+          example: "mustafa@ornek.com"
+        phone:
+          type: string
+          example: "+905551234567"
+
+    CustomerInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          example: "Mustafa Yiğit Emet"
+        email:
+          type: string
+          format: email
+          example: "mustafa@ornek.com"
+        password:
+          type: string
+          format: password
+          example: "gizlisifre123"
+        phone:
+          type: string
+          example: "+905551234567"
+
+    Instrument:
+      type: object
+      required: [id, brand, model]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 101
+        brand:
+          type: string
+          example: "Fender"
+        model:
+          type: string
+          example: "Stratocaster"
+        year:
+          type: integer
+          example: 2018
+
+    InstrumentInput:
+      type: object
+      required: [brand, model]
+      properties:
+        brand:
+          type: string
+          example: "Fender"
+        model:
+          type: string
+          example: "Stratocaster"
+        year:
+          type: integer
+          example: 2018
+
+    Error:
+      type: object
+      description: Hata durumlarında döndürülen standart hata yanıtı
+      properties:
+        message:
+          type: string
+          description: Hatayı açıklayan mesaj
+          example: "İstenilen kaynak bulunamadı."
+
+    Product:
+      type: object
+      required: [id, name, price, stock]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 501
+        name:
+          type: string
+          example: "Ernie Ball Super Slinky 9-42 Tel"
+        description:
+          type: string
+          example: "Nikel sarım elektro gitar teli."
+        price:
+          type: number
+          format: float
+          example: 250.50
+        stock:
+          type: integer
+          example: 45
+
+    ProductInput:
+      type: object
+      required: [name, price, stock]
+      properties:
+        name:
+          type: string
+          example: "Ernie Ball Super Slinky 9-42 Tel"
+        description:
+          type: string
+          example: "Nikel sarım elektro gitar teli."
+        price:
+          type: number
+          format: float
+          example: 250.50
+        stock:
+          type: integer
+          example: 45
+
+    CartItem:
+      type: object
+      required: [id, productId, quantity]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 801
+        productId:
+          type: integer
+          example: 501
+        productName:
+          type: string
+          example: "Ernie Ball Super Slinky 9-42 Tel"
+        quantity:
+          type: integer
+          example: 2
+
+    CartItemInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+          example: 501
+        quantity:
+          type: integer
+          example: 2
+
+    Appointment:
+      type: object
+      required: [id, instrumentId, date, status]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 3001
+        instrumentId:
+          type: integer
+          example: 101
+        date:
+          type: string
+          format: date-time
+          example: "2026-04-15T14:00:00Z"
+        status:
+          type: string
+          example: "Onaylandı"
+
+    AppointmentInput:
+      type: object
+      required: [instrumentId, date]
+      properties:
+        instrumentId:
+          type: integer
+          example: 101
+        date:
+          type: string
+          format: date-time
+          example: "2026-04-15T14:00:00Z"
+        notes:
+          type: string
+          example: "Teller yüksek, sap ayarı kontrol edilecek."
+
+    MaintenanceRecord:
+      type: object
+      required: [id, instrumentId, actions, date]
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 9001
+        instrumentId:
+          type: integer
+          example: 101
+        actions:
+          type: array
+          items:
+            type: string
+          example: ["Tel değişimi", "Fret temizliği", "Entonasyon ayarı"]
+        date:
+          type: string
+          format: date-time
+          example: "2026-04-15T15:30:00Z"
+
+    MaintenanceRecordInput:
+      type: object
+      required: [instrumentId, actions]
+      properties:
+        instrumentId:
+          type: integer
+          example: 101
+        actions:
+          type: array
+          items:
+            type: string
+          example: ["Tel değişimi", "Fret temizliği"]
+        notes:
+          type: string
+          example: "Ernie ball 9-42 takıldı."
+
+    PredictionResult:
+      type: object
+      required: [instrumentId, estimatedDate, recommendation]
+      properties:
+        instrumentId:
+          type: integer
+          example: 101
+        estimatedDate:
+          type: string
+          format: date-time
+          example: "2026-07-15T00:00:00Z"
+        recommendation:
+          type: string
+          example: "Günde 2 saat kullanım ve %60 nem oranına bağlı olarak 3 ay içinde tel değişimi önerilmektedir."
