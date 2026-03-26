@@ -1,20 +1,36 @@
-require('dotenv').config(); 
+require('dotenv').config(); // .env dosyasındaki gizli verileri okumak için
 const express = require('express');
-const mongoose = require('mongoose'); 
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+// Kendi yazdığımız rotaları (routes) içeri aktarıyoruz
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const apiRoutes = require('./app_api/routes/index'); // Senin dalından (halil-ergun) gelen yeni rota
 
 const app = express();
 
-app.use(express.json()); 
+// Orta katmanlar (Middleware)
+app.use(cors()); // Dışarıdan gelen isteklere izin ver (Vercel ve Front-end için şart)
+app.use(express.json()); // Gelen JSON verilerini okuyabilmek için
 
-const apiRoutes = require('./app_api/routes/index');
+// Rotaları kullan
+app.use('/', productRoutes); 
+app.use('/', cartRoutes);
+app.use('/v1', apiRoutes); // Senin dalından (halil-ergun) gelen yeni kullanım
 
+// Veritabanı (MongoDB) Bağlantısı
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB bağlantısı başarılı!'))
-  .catch((err) => console.error('MongoDB bağlantı hatası:', err));
+    .then(() => console.log('✅ MongoDB veritabanına başarıyla bağlanıldı!'))
+    .catch((err) => console.log('❌ MongoDB bağlantı hatası:', err));
 
-app.use('/v1', apiRoutes);
-
+// Sunucuyu Başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Sunucu ${PORT} portunda çalışıyor...`);
+    console.log(`🚀 Sunucu ${PORT} portunda çalışıyor...`);
+});
+// Sunucuyu Başlat
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Sunucu ${PORT} portunda çalışıyor...`);
 });
