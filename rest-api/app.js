@@ -4,8 +4,8 @@ const cors = require('cors');
 require('dotenv').config(); // .env dosyasındaki gizli verileri okumak için
 
 // Kendi yazdığımız rotaları (routes) içeri aktarıyoruz
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
+const productRoutes = require('./app_api/routes/productRoutes');
+const cartRoutes = require('./app_api/routes/cartRoutes');
 
 const app = express();
 
