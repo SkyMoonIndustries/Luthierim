@@ -1,34 +1,30 @@
-require('dotenv').config(); // .env dosyasındaki gizli verileri okumak için
+require('dotenv').config(); // Gizli veriler için en üstte olması en güvenlisidir
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-
-// Kendi yazdığımız rotaları (routes) içeri aktarıyoruz
-const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes');
-const apiRoutes = require('./app_api/routes/index'); // Senin dalından (halil-ergun) gelen yeni rota
+const cors = require('cors'); 
 
 const app = express();
 
 // Orta katmanlar (Middleware)
-app.use(cors()); // Dışarıdan gelen isteklere izin ver (Vercel ve Front-end için şart)
-app.use(express.json()); // Gelen JSON verilerini okuyabilmek için
+app.use(cors()); // Vercel ve Front-end'in haberleşebilmesi için ŞART!
+app.use(express.json()); // JSON verilerini okumak için
 
-// Rotaları kullan
-app.use('/', productRoutes); 
+// Rotalar (Routes)
+// 1. Gökay Uysal
+const productRoutes = require('./app_api/routes/productRoutes');
+const cartRoutes = require('./app_api/routes/cartRoutes');
+app.use('/', productRoutes);
 app.use('/', cartRoutes);
-app.use('/v1', apiRoutes); // Senin dalından (halil-ergun) gelen yeni kullanım
 
-// Veritabanı (MongoDB) Bağlantısı
+// 2. Halil Ergün
+const apiRoutes = require('./app_api/routes/index');
+app.use('/v1', apiRoutes); 
+
+// Veritabanı Bağlantısı
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB veritabanına başarıyla bağlanıldı!'))
     .catch((err) => console.log('❌ MongoDB bağlantı hatası:', err));
 
-// Sunucuyu Başlat
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Sunucu ${PORT} portunda çalışıyor...`);
-});
 // Sunucuyu Başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
