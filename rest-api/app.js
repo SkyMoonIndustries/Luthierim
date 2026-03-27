@@ -24,9 +24,26 @@ app.use('/v1', ekipRoutes);  // Halil'in Postman testleri için
 app.use('/api', ekipRoutes); // Mustafa'nın Postman testleri için
 
 // Veritabanı Bağlantısı
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB veritabanına başarıyla bağlanıldı!'))
-    .catch((err) => console.log('❌ MongoDB bağlantı hatası:', err));
+// YENİ VERCEL (SERVERLESS) VERİTABANI BAĞLANTISI
+const connectDB = async () => {
+    // Eğer bağlantı zaten varsa (uyaniksa), boşuna tekrar bağlanma
+    if (mongoose.connection.readyState >= 1) {
+        return;
+    }
+    // Bağlantı kopmuşsa (uyumuşsa) yeniden bağlan
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('✅ Serverless MongoDB bağlantısı ayağa kaldırıldı!');
+    } catch (err) {
+        console.log('❌ MongoDB bağlantı hatası:', err);
+    }
+};
+
+// Her API isteği geldiğinde önce veritabanının uyanık olduğundan emin ol!
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 // Sunucuyu Başlat
 const PORT = process.env.PORT || 3000;
