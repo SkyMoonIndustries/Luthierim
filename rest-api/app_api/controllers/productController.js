@@ -43,17 +43,53 @@ exports.deleteProduct = async (req, res) => {
     }
 };
 
-// 5. Görselden Yedek Parça Bulma [YAPAY ZEKA] (POST)
+const { GoogleGenAI } = require('@google/genai');
+
+// 5. Görselden Yedek Parça Bulma [GERÇEK YAPAY ZEKA] (POST)
 exports.searchProductByImage = async (req, res) => {
     try {
-        // Not: Gerçek bir AI modeli API'si bağlanana kadar, hocaya videoda göstermek için 
-        // veritabanından akıllıca rastgele 2 benzer ürün döndüren bir AI simülasyonu yapıyoruz.
-        const similarProducts = await Product.aggregate([{ $sample: { size: 2 } }]);
-        res.status(200).json({ 
-            message: "Yapay zeka görsel analizi tamamlandı. Eşleşen ürünler bulundu.", 
-            results: similarProducts 
+        // 1. Kullanıcı fotoğraf yüklemiş mi kontrol et
+        if (!req.file) {
+            return res.status(400).json({ message: "Lütfen 'image' anahtarı ile bir fotoğraf yükleyin." });
+        }
+
+        // 2. Gemini Yapay Zeka Bağlantısını Kur
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+        // 3. Fotoğrafı Gemini'a gönder ve ne olduğunu sor
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: [
+                "Bu fotoğraftaki müzik aleti donanımının veya yedek parçasının adını Türkçe olarak, sadece tek bir kelime ile söyle (örneğin: gitar, manyetik, tel, pena, köprü, klavye, amfi). Başka hiçbir açıklama yapma.",
+                {
+                    inlineData: {
+                        data: req.file.buffer.toString("base64"),
+                        mimeType: req.file.mimetype
+                    }
+                }
+            ]
         });
+
+        // 4. Yapay Zekadan gelen o tek kelimeyi (anahtar kelimeyi) al
+        const keyword = response.text.trim();
+        console.log("🤖 Yapay Zeka Algıladı:", keyword);
+
+        // 5. Veritabanımızda adı veya açıklaması bu kelimeyi içeren ürünleri bul
+        const matchedProducts = await Product.find({
+            $or: [
+                { name: { $regex: keyword, $options: 'i' } },
+                { description: { $regex: keyword, $options: 'i' } }
+            ]
+        });
+
+        // 6. Sonucu Müşteriye (Front-End'e) Döndür
+        res.status(200).json({ 
+            message: `Yapay zeka görseli analiz etti. Algılanan nesne: '${keyword}'`, 
+            results: matchedProducts 
+        });
+
     } catch (error) {
-        res.status(500).json({ message: "AI Analiz hatası.", error });
+        console.error("AI Hatası:", error);
+        res.status(500).json({ message: "Yapay zeka analizi sırasında bir hata oluştu.", error: error.message });
     }
 };
