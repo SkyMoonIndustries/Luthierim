@@ -36,7 +36,6 @@ app.use(async (req, res, next) => {
 // ------------------------------------------------
 
 // 3. Rotalar (Routes)
-// DİKKAT: Veritabanı bağlantısından SONRA gelmek zorundalar!
 
 // Gökay Uysal (Senin Kısım)
 const productRoutes = require('./app_api/routes/productRoutes');
