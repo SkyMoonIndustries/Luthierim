@@ -1,0 +1,217 @@
+{
+  "info": {
+    "_postman_id": "911f15dd-d474-4229-90dc-7c45a1199c49",
+    "name": "Gökay Uysal - Luthierim API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50528006",
+    "_collection_link": "https://go.postman.co/collection/50528006-911f15dd-d474-4229-90dc-7c45a1199c49?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Ürün Ekleme",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"ESP Explorer Elektro Gitar\",\r\n    \"description\": \"Sıfır ayarında.\",\r\n    \"price\": 75000,\r\n    \"stock\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/products",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ürün Listeleme",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/products",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ürün Güncelleme",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"price\": 70000,\r\n    \"stock\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/products/69d04362b7838dee40677c43",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "products",
+            "69d04362b7838dee40677c43"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Ürün Silme",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/products/69d04362b7838dee40677c43",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "products",
+            "69d04362b7838dee40677c43"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sepete Ürün Ekleme",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"productId\": \"69cc33527271bddcfa9c7c3c\",\r\n    \"quantity\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/cart/items",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "cart",
+            "items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sepetteki Ürünleri Listeleme",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/cart/items",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "cart",
+            "items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sepetten Ürün Çıkarma",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/cart/items/69d043aab7838dee40677c4b",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "cart",
+            "items",
+            "69d043aab7838dee40677c4b"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Fotoğraftan Ürün Bulma",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "image",
+              "type": "file",
+              "uuid": "978f39ac-90b7-4a01-baa0-20fc03cfc318",
+              "src": "/C:/Users/SkyMoon Industries/Desktop/gitar.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/products/search/image",
+          "protocol": "https",
+          "host": [
+            "luthierim-backend",
+            "vercel",
+            "app"
+          ],
+          "path": [
+            "products",
+            "search",
+            "image"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
