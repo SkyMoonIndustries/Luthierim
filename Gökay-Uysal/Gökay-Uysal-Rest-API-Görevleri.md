@@ -1,7 +1,7 @@
 # Gökay Uysal'ın REST API Metotları
 
-**Canlı Domain Adresi:** `https://luthierim.vercel.app/`
-**API Test Videosu:** `[Link buraya eklenecek]`
+**Canlı Domain Adresi:** `https://luthierim-backend.vercel.app/`
+**API Test Videosu:** `https://www.youtube.com/watch?v=6KP2OY5Lm6g`
 
 ## 1. Yeni Ürün Ekleme
 
