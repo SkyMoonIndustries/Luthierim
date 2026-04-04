@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { ShoppingCart, Camera, Store, Settings } from 'lucide-react';
+import { ShoppingCart, Camera, Store, Settings, Users } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import AiSearch from './pages/AiSearch';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
+import CustomerPanel from './pages/CustomerPanel';
 import './App.css';
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
             <Link to="/cart" style={{ textDecoration: 'none', color: '#e74c3c', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
               <ShoppingCart size={20} /> Sepetim
             </Link>
+            <Link to="/customer" style={{ textDecoration: 'none', color: '#27ae60', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
+              <Users size={20} /> Müşteri Paneli
+            </Link>
             <Link to="/admin" style={{ textDecoration: 'none', color: '#8e44ad', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
               <Settings size={20} /> Luthier Paneli
             </Link>
@@ -38,6 +42,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/ai-search" element={<AiSearch />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/customer" element={<CustomerPanel />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
         <Toaster position="bottom-right" reverseOrder={false} />

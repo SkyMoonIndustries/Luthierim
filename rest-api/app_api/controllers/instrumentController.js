@@ -34,7 +34,7 @@ exports.getRecommendations = async (req, res) => {
     if (!instrument) return res.status(404).json({ error: 'Enstrüman bulunamadı' });
     
     
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY_3);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
    
