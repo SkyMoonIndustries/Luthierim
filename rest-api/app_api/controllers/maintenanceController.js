@@ -1,4 +1,5 @@
 const MaintenanceRecord = require('../models/MaintenanceRecord');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 exports.getAllMaintenanceRecords = async (req, res) => {
   try {
@@ -51,28 +52,28 @@ exports.updateMaintenanceNotes = async (req, res) => {
 exports.predictMaintenance = async (req, res) => {
   try {
     const { instrumentId } = req.params;
-    
+    const { playFrequency = "Bilinmiyor", sweatProfile = "Normal", environment = "Standart" } = req.query;
     const lastRecord = await MaintenanceRecord.findOne({ instrumentId }).sort({ date: -1 });
-    
-    let predictionDate = new Date();
-    let aiMessage = "";
+    const lastMaintenanceDate = lastRecord ? lastRecord.date.toLocaleDateString('tr-TR') : "Geçmiş bakım kaydı yok.";
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const prompt = `
+      Sen profesyonel bir Luthier'sin.
+      Gitarın son bakım tarihi: ${lastMaintenanceDate}
+      Kullanıcının çalma sıklığı: ${playFrequency}
+      Terleme profili: ${sweatProfile}
+      Çevre şartları: ${environment}
 
-    if (lastRecord) {
-      predictionDate = new Date(lastRecord.date);
-      predictionDate.setMonth(predictionDate.getMonth() + 6);
-      aiMessage = "Yapay Zeka Analizi: Enstrümanın son bakım geçmişi ve yapılan işlemler analiz edildi. Ahşap yorgunluğu ve tel ömrü göz önüne alınarak periyodik entonasyon ve sap ayarı için en uygun tarih hesaplandı.";
-    } else {
-      predictionDate.setMonth(predictionDate.getMonth() + 1);
-      aiMessage = "Yapay Zeka Analizi: Bu enstrümana ait geçmiş bakım verisi bulunamadı. Genel tolerans değerleri kapsamında 1 ay içerisinde detaylı bir Luthier kontrolü tavsiye edilmektedir.";
-    }
-
-    res.status(200).json({ 
+      Bu verilere dayanarak, luthier ağzıyla kısa ve öz (maksimum 3 cümle) bir sonraki tel değişimi ve sap ayarı için zaman tahmini ve tavsiyesi ver.
+      `;
+      const result = await model.generateContent(prompt);
+      const aiMessage = result.response.text();
+      res.status(200).json({ 
       message: 'Akıllı tahmin başarıyla oluşturuldu', 
-      ai_analysis: aiMessage,
-      estimated_maintenance_date: predictionDate,
-      confidence_score: "%88.4" 
+      ai_analysis: aiMessage
     });
   } catch (error) {
+    console.error("AI Hatası:", error);
     res.status(500).json({ message: 'Tahmin oluşturulurken hata oluştu', error: error.message });
   }
 };
