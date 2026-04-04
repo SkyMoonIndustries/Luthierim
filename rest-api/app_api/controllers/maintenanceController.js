@@ -55,7 +55,7 @@ exports.predictMaintenance = async (req, res) => {
     const { playFrequency = "Bilinmiyor", sweatProfile = "Normal", environment = "Standart" } = req.query;
     const lastRecord = await MaintenanceRecord.findOne({ instrumentId }).sort({ date: -1 });
     const lastMaintenanceDate = lastRecord ? lastRecord.date.toLocaleDateString('tr-TR') : "Geçmiş bakım kaydı yok.";
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY_2);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const prompt = `
       Sen profesyonel bir Luthier'sin.
