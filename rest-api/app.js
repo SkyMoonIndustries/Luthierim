@@ -5,34 +5,55 @@ const cors = require('cors');
 
 const app = express();
 
-// Orta katmanlar (Middleware)
+// 1. Orta katmanlar (Middleware)
 app.use(cors()); // Vercel ve Front-end'in haberleşebilmesi için ŞART!
 app.use(express.json()); // JSON verilerini okumak için
 
-// Rotalar (Routes)
-// 1. Gökay Uysal (Senin Kısım)
+// 2. --- ZOMBİ KATİLİ VERCEL VERİTABANI BAĞLANTISI ---
+let isConnected = false; // Kendi global hafızamız
+
+const connectDB = async () => {
+    if (isConnected) {
+        return; // Zaten taze bir bağlantımız varsa atla
+    }
+    try {
+        // serverSelectionTimeoutMS: Zombi olursa 10 saniye bekleme, 5 saniyede uyan ve bağlan!
+        const db = await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000 
+        });
+        isConnected = db.connections[0].readyState === 1;
+        console.log('✅ Yenilmez (Vercel-Proof) MongoDB bağlantısı kuruldu!');
+    } catch (err) {
+        console.log('❌ MongoDB bağlantı hatası:', err);
+    }
+};
+
+// Bu kontrol ROTALARDAN HEMEN ÖNCE olmalı! (Gelen her istek önce buraya çarpar)
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
+// ------------------------------------------------
+
+// 3. Rotalar (Routes)
+
+// Gökay Uysal (Senin Kısım)
 const productRoutes = require('./app_api/routes/productRoutes');
 const cartRoutes = require('./app_api/routes/cartRoutes');
 app.use('/', productRoutes);
 app.use('/', cartRoutes);
 
-// 2. Halil ve Mustafa'nın Kısımları
-// DİKKAT: İkisi de aynı 'index.js' dosyasını göstermiş. Kimsenin testi patlamasın diye
-// aynı dosyayı hem /v1 hem de /api üzerinden ulaşılabilecek şekilde ayarlıyoruz.
+// Halil ve Mustafa'nın Kısımları
 const ekipRoutes = require('./app_api/routes/index');
 app.use('/v1', ekipRoutes);  // Halil'in Postman testleri için
 app.use('/api', ekipRoutes); // Mustafa'nın Postman testleri için
 
-// Veritabanı Bağlantısı
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB veritabanına başarıyla bağlanıldı!'))
-    .catch((err) => console.log('❌ MongoDB bağlantı hatası:', err));
 
-// Sunucuyu Başlat
+// 4. Sunucuyu Başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Sunucu ${PORT} portunda çalışıyor...`);
 });
 
-// Mustafa'nın Eklediği Vercel (Serverless) Çıkış Kodu ŞARTI
+// 5. Mustafa'nın Eklediği Vercel (Serverless) Çıkış Kodu ŞARTI
 module.exports = app;
