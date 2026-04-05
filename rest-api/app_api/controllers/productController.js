@@ -54,6 +54,7 @@ exports.searchProductByImage = async (req, res) => {
         }
 
         // 2. Gemini Yapay Zeka Bağlantısını Kur
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_3 });
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2});
 
         // 3. Fotoğrafı Gemini'a gönder ve ne olduğunu sor
