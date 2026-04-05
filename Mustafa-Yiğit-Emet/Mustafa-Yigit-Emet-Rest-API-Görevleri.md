@@ -1,7 +1,7 @@
 # Mustafa Yiğit Emet'in REST API Metotları
 
 **Canlı Domain Adresi:** `https://luthierim-backend.vercel.app/`
-**API Test Videosu:** `https://youtu.be/dzXBXGpsbP8`
+**API Test Videosu:** `https://youtu.be/PxF-VdF1fz0`
 
 > **Not:** Kendi üzerime düşen 7 adet Backend (API) gereksiniminin tamamı (%100) eksiksiz olarak geliştirilmiş, Postman üzerinden uçtan uca test edilmiş ve yukarıdaki videoda kanıtlanmıştır.
 
