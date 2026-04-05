@@ -1,7 +1,7 @@
 # Halil Ergün'ün Web Frontend Görevleri
 
 **Proje Canlı Yayın Adresi (Vercel):** `https://luthierim.vercel.app`
-**Görev Test ve Veritabanı Kanıt Videosu:** `https://youtu.be/to98Ow8BxTQ`
+**Görev Test ve Veritabanı Kanıt Videosu:** `https://youtu.be/l2xx1PhFAYY`
 
 > **Not:** Kendi üzerime düşen 8 adet Frontend gereksiniminin 7 tanesini eksiksiz olarak geliştirilmiş, Vercel üzerinde canlıya alınmış ve Backend (API) uç noktalarıyla başarılı bir şekilde entegre edilmiştir.
 
