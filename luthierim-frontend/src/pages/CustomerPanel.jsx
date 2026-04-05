@@ -15,13 +15,27 @@ export default function CustomerPanel() {
 
   // --- API İSTEKLERİ ---
 
-  // 1. Hesap Kaydı
+  // 1. Hesap Kaydı (GÜNCELLENDİ: ID Yakalama ve Pop-up)
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post('/customers/register', registerData);
-      toast.success("Kayıt başarıyla oluşturuldu!");
-      if (response.data.id) setCustomerId(response.data.id);
+      
+      // Backend'den gelen ID'yi her ihtimale karşı (id, _id, data.id vs) yakalıyoruz
+      const newId = response.data.id || response.data._id || (response.data.data && response.data.data._id) || (response.data.data && response.data.data.id);
+      
+      if (newId) {
+        setCustomerId(newId);
+        // Ekrana kocaman ID'yi basıyoruz ki gözden kaçmasın
+        Swal.fire({
+          title: 'Kayıt Başarılı!',
+          html: `Yeni hesabınız oluşturuldu.<br><br><b>Müşteri ID'niz:</b><br><code style="font-size: 18px; background: #eee; padding: 5px; border-radius: 4px; display: inline-block; margin-top: 5px;">${newId}</code><br><br>Sistem bu ID'yi sizin için kopyaladı ve ekrana sabitledi!`,
+          icon: 'success',
+          confirmButtonText: 'Harika'
+        });
+      } else {
+        toast.success("Kayıt oluşturuldu ama ID backend'den okunamadı!");
+      }
     } catch {
       toast.error("Kayıt oluşturulamadı.");
     }
@@ -57,18 +71,21 @@ export default function CustomerPanel() {
         await api.delete(`/customers/${customerId}`);
         toast.success("Hesap başarıyla silindi.");
         setCustomerId('');
+        setInstruments([]); // Hesap silinince ekrandaki enstrümanları da temizle
       } catch {
         toast.error("Hesap silinemedi.");
       }
     }
   };
 
-  // 4. Enstrümanları Getir
+  // 4. Enstrümanları Getir (GÜNCELLENDİ: Dizi kontrolü)
   const fetchInstruments = async () => {
     if (!customerId) return toast.error("Enstrümanları görmek için Müşteri ID gerekli.");
     try {
       const response = await api.get(`/customers/${customerId}/instruments`);
-      setInstruments(response.data);
+      // Backend'in veriyi döndürme şekline göre ayarlıyoruz (direkt dizi veya data.data içinde olabilir)
+      const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      setInstruments(data);
       toast.success("Enstrümanlar listelendi.");
     } catch {
       toast.error("Enstrümanlar çekilemedi.");
@@ -141,6 +158,19 @@ export default function CustomerPanel() {
       <h2 style={{ marginBottom: '20px', color: '#2c3e50', display: 'flex', alignItems: 'center', gap: '10px' }}>
         <User size={28} color="#27ae60" /> Müşteri & Envanter Paneli
       </h2>
+
+      {/* YENİ EKLENEN KISIM: SÜREKLİ EKRANDA DURAN AKTİF ID PANOSU */}
+      {customerId && (
+        <div style={{ backgroundColor: '#e8f5e9', padding: '15px 20px', borderRadius: '12px', marginBottom: '20px', border: '2px solid #4caf50', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '24px' }}>🔑</span>
+            <span style={{ fontSize: '18px', color: '#2e7d32', fontWeight: 'bold' }}>Aktif Müşteri ID:</span>
+          </div>
+          <span style={{ backgroundColor: '#fff', padding: '8px 15px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '18px', fontWeight: 'bold', userSelect: 'all', letterSpacing: '1px' }}>
+            {customerId}
+          </span>
+        </div>
+      )}
 
       {/* GEÇİCİ ID GİRİŞ ALANI */}
       <div style={{ backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '12px', marginBottom: '30px', border: '1px solid #e2e8f0' }}>
