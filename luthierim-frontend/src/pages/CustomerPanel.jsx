@@ -19,7 +19,7 @@ export default function CustomerPanel() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/customers/register', registerData);
+      const response = await api.post('/v1/customers/register', registerData);
       
       // Backend'den gelen ID'yi her ihtimale karşı (id, _id, data.id vs) yakalıyoruz
       const newId = response.data.id || response.data._id || (response.data.data && response.data.data._id) || (response.data.data && response.data.data.id);
@@ -45,7 +45,7 @@ export default function CustomerPanel() {
   const handleUpdateCustomer = async () => {
     if (!customerId) return toast.error("Lütfen önce bir Müşteri ID girin.");
     try {
-      await api.put(`/customers/${customerId}`, registerData);
+      await api.put(`/v1/customers/${customerId}`, registerData);
       toast.success("Hesap bilgileri güncellendi!");
     } catch {
       toast.error("Güncelleme başarısız.");
@@ -68,7 +68,7 @@ export default function CustomerPanel() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/customers/${customerId}`);
+        await api.delete(`/v1/customers/${customerId}`);
         toast.success("Hesap başarıyla silindi.");
         setCustomerId('');
         setInstruments([]); // Hesap silinince ekrandaki enstrümanları da temizle
@@ -82,7 +82,7 @@ export default function CustomerPanel() {
   const fetchInstruments = async () => {
     if (!customerId) return toast.error("Enstrümanları görmek için Müşteri ID gerekli.");
     try {
-      const response = await api.get(`/customers/${customerId}/instruments`);
+      const response = await api.get(`/v1/customers/${customerId}/instruments`);
       // Backend'in veriyi döndürme şekline göre ayarlıyoruz (direkt dizi veya data.data içinde olabilir)
       const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
       setInstruments(data);
@@ -97,7 +97,7 @@ export default function CustomerPanel() {
     e.preventDefault();
     if (!customerId) return toast.error("Önce müşteri seçmelisiniz (ID).");
     try {
-      await api.post(`/customers/${customerId}/instruments`, instrumentData);
+      await api.post(`/v1/customers/${customerId}/instruments`, instrumentData);
       toast.success("Yeni enstrüman eklendi!");
       setInstrumentData({ brand: '', model: '', year: '' });
       fetchInstruments();
@@ -120,7 +120,7 @@ export default function CustomerPanel() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/instruments/${instrumentId}`);
+        await api.delete(`/v1/instruments/${instrumentId}`);
         toast.success("Enstrüman silindi.");
         fetchInstruments();
       } catch {
@@ -134,7 +134,7 @@ export default function CustomerPanel() {
     setLoading(true);
     try {
       toast.loading("Yapay Zeka analiz ediyor...", { id: 'ai-toast' });
-      const response = await api.post(`/instruments/${instrumentId}/recommendations`, {
+      const response = await api.post(`/v1/instruments/${instrumentId}/recommendations`, {
         style: 'Genel' 
       });
       toast.success("Tavsiye alındı!", { id: 'ai-toast' });
