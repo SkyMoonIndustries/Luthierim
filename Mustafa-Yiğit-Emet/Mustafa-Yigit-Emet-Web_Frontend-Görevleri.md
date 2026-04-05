@@ -1,7 +1,7 @@
 # Mustafa Yiğit Emet'in Web Frontend Görevleri
 
 **Proje Canlı Yayın Adresi (Vercel):** `https://luthierim.vercel.app`
-**Görev Test ve Veritabanı Kanıt Videosu:** `https://youtu.be/PxF-VdF1fz0`
+**Görev Test ve Veritabanı Kanıt Videosu:** `https://youtu.be/dzXBXGpsbP8`
 
 > **Not:** Kendi üzerime düşen 8 adet Frontend gereksiniminin 7 adetinin hepsini (%100) eksiksiz olarak geliştirilmiş, Vercel üzerinde canlıya alınmış ve Backend (API) uç noktalarıyla başarılı bir şekilde entegre edilmiştir.
 
