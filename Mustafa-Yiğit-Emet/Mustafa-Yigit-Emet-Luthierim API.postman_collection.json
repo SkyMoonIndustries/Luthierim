@@ -1,0 +1,143 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Mustafa Yiğit Emet - Luthierim API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Müşteri Hesabı Oluşturma",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Mustafa Yiğit\",\r\n    \"email\": \"test@luthier.com\",\r\n    \"password\": \"123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/customers/register",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "customers", "register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Müşteri Bilgilerini Güncelleme",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Mustafa Güncel\",\r\n    \"email\": \"gunceltest@luthier.com\",\r\n    \"password\": \"123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/customers/MUSTERI_ID",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "customers", "MUSTERI_ID"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Müşteri Enstrümanlarını Listeleme",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/customers/MUSTERI_ID/instruments",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "customers", "MUSTERI_ID", "instruments"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Yeni Enstrüman Ekleme",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"brand\": \"Fender\",\r\n    \"model\": \"Stratocaster\",\r\n    \"year\": \"2020\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/customers/MUSTERI_ID/instruments",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "customers", "MUSTERI_ID", "instruments"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Enstrüman Detaylarını Güncelleme",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"brand\": \"Fender\",\r\n    \"model\": \"Telecaster\",\r\n    \"year\": \"2022\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/instruments/ENSTRUMAN_ID",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "instruments", "ENSTRUMAN_ID"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Enstrüman Kaydını Silme",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/instruments/ENSTRUMAN_ID",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "instruments", "ENSTRUMAN_ID"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Müşteri Hesabını Silme",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://luthierim-backend.vercel.app/api/customers/MUSTERI_ID",
+          "protocol": "https",
+          "host": ["luthierim-backend", "vercel", "app"],
+          "path": ["api", "customers", "MUSTERI_ID"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

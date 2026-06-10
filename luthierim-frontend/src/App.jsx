@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { ShoppingCart, Camera, Store, Settings, Wrench } from 'lucide-react';
+import { ShoppingCart, Camera, Store, Settings, Wrench, User } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import AiSearch from './pages/AiSearch';
 import Cart from './pages/Cart';
 import Admin from './pages/Admin';
 import Maintenance from './pages/Maintenance';
+import CustomerPanel from './pages/CustomerPanel';
 import './App.css';
 
 function App() {
@@ -32,6 +33,9 @@ function App() {
             <Link to="/maintenance" style={{ textDecoration: 'none', color: '#8e44ad', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
               <Wrench size={20} /> Bakım & Randevu
             </Link>
+            <Link to="/customer-panel" style={{ textDecoration: 'none', color: '#27ae60', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
+              <User size={20} /> Müşteri Paneli
+            </Link>
             <Link to="/admin" style={{ textDecoration: 'none', color: '#34495e', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
               <Settings size={20} /> Luthier Paneli
             </Link>
@@ -46,6 +50,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           {/* YENİ SAYFAMIZIN ROTASI */}
           <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/customer-panel" element={<CustomerPanel />} />
         </Routes>
         <Toaster position="bottom-right" reverseOrder={false} />
       </div>
