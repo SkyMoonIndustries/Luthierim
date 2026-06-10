@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'features/maintenance/screens/customer_maintenance_screen.dart';
+import 'features/maintenance/screens/customer_panel_screen.dart'; // Yeni oluşturduğumuz sayfa
 import 'services/api_service.dart';
 
 void main() {
@@ -14,17 +15,16 @@ class LuthierimApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Luthierim',
-      debugShowCheckedModeBanner: false, // Sağ üstteki debug yazısını kaldırır
+      debugShowCheckedModeBanner: false, 
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: const MainSkeleton(), // Uygulamanın ana iskeleti
+      home: const MainSkeleton(), 
     );
   }
 }
 
-// --- ALT SEKMELERİ YÖNETECEK ANA MERKEZ ---
 class MainSkeleton extends StatefulWidget {
   const MainSkeleton({super.key});
 
@@ -35,30 +35,26 @@ class MainSkeleton extends StatefulWidget {
 class _MainSkeletonState extends State<MainSkeleton> {
   int _currentIndex = 0;
 
-  // Alt sekmelere tıklandıkça gövdede gösterilecek sayfalar
   final List<Widget> _pages = [
     const VitrinPage(),
     const AISearchPage(),
     const CartPage(),
-    const CustomerMaintenanceScreen(),
-    const CustomerPanelPage(),
+    const CustomerMaintenanceScreen(), // SENİN MODÜLÜN
+    const CustomerPanelScreen(),       // ARKADAŞININ YENİ TERTEMİZ MODÜLÜ
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Seçili sayfayı gövdede göster
       body: _pages[_currentIndex], 
-      
-      // Alt Navigasyon Çubuğu
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Sekme değiştirildiğinde ekranı güncelle
+            _currentIndex = index; 
           });
         },
-        type: BottomNavigationBarType.fixed, // 3'ten fazla sekme olduğu için bu ayar şart
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blueAccent,
         unselectedItemColor: Colors.grey,
         items: const [
@@ -74,7 +70,7 @@ class _MainSkeletonState extends State<MainSkeleton> {
 }
 
 // =====================================================================
-// BURADAN AŞAĞISI İLERİDE HERKESİN KENDİ DOSYASINA TAŞIYACAĞI SAYFALAR
+// DUMMY SAYFALAR (Vitrin, AI, Sepet vs.)
 // =====================================================================
 
 // ==========================================
