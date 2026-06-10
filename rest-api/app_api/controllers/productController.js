@@ -1,10 +1,17 @@
 const Product = require('../models/Product');
+// Üst dizindeki devops_helpers dosyasından Redis istemcisini çağırıyoruz
+const { redisClient } = require('../../devops_helpers'); 
 
 // 1. Yeni Ürün Ekleme (POST)
 exports.addProduct = async (req, res) => {
     try {
         const newProduct = new Product(req.body);
         const savedProduct = await newProduct.save();
+        
+        // ÖNEMLİ: Yeni ürün eklenince Redis'teki eski listeyi temizle
+        await redisClient.del('all_products');
+        console.log('♻️ Yeni ürün eklendi, Redis cache temizlendi.');
+
         res.status(201).json(savedProduct);
     } catch (error) {
         res.status(400).json({ code: "INVALID_INPUT", message: "Geçersiz veri.", error });
@@ -14,6 +21,15 @@ exports.addProduct = async (req, res) => {
 // 2. Satıştaki Ürünleri Listeleme (GET)
 exports.listProducts = async (req, res) => {
     try {
+        // RADAR DEAKTİF: Redis'i şimdilik bypass ediyoruz ki uygulama asla çökmesin
+        /*
+        const cachedProducts = await redisClient.get('all_products');
+        if (cachedProducts) {
+            return res.status(200).json(JSON.parse(cachedProducts));
+        }
+        */
+
+        // Sistem doğrudan güvenli liman olan MongoDB'den veriyi çekecek
         const products = await Product.find();
         res.status(200).json(products);
     } catch (error) {
@@ -26,6 +42,11 @@ exports.updateProduct = async (req, res) => {
     try {
         const updatedProduct = await Product.findByIdAndUpdate(req.params.productId, req.body, { new: true });
         if (!updatedProduct) return res.status(404).json({ message: "İstenilen kaynak bulunamadı." });
+        
+        // ÖNEMLİ: Ürün güncellenince eski cache'i patlat ki vitrinde eski fiyat kalmasın
+        await redisClient.del('all_products');
+        console.log('♻️ Ürün güncellendi, Redis cache temizlendi.');
+
         res.status(200).json(updatedProduct);
     } catch (error) {
         res.status(400).json({ message: "Güncelleme başarısız.", error });
@@ -37,7 +58,12 @@ exports.deleteProduct = async (req, res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
         if (!deletedProduct) return res.status(404).json({ message: "İstenilen kaynak bulunamadı." });
-        res.status(204).send(); // 204 No Content (Başarıyla silindi, içerik dönmez)
+        
+        // ÖNEMLİ: Ürün silinince cache'i temizle
+        await redisClient.del('all_products');
+        console.log('♻️ Ürün silindi, Redis cache temizlendi.');
+
+        res.status(204).send(); 
     } catch (error) {
         res.status(400).json({ message: "Silme işlemi başarısız.", error });
     }
@@ -48,15 +74,12 @@ const { GoogleGenAI } = require('@google/genai');
 // 5. Görselden Yedek Parça Bulma [GERÇEK YAPAY ZEKA] (POST)
 exports.searchProductByImage = async (req, res) => {
     try {
-        // 1. Kullanıcı fotoğraf yüklemiş mi kontrol et
         if (!req.file) {
             return res.status(400).json({ message: "Lütfen 'image' anahtarı ile bir fotoğraf yükleyin." });
         }
 
-        // 2. Gemini Yapay Zeka Bağlantısını Kur
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2});
 
-        // 3. Fotoğrafı Gemini'a gönder ve ne olduğunu sor
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: [
@@ -70,11 +93,9 @@ exports.searchProductByImage = async (req, res) => {
             ]
         });
 
-        // 4. Yapay Zekadan gelen o tek kelimeyi (anahtar kelimeyi) al
         const keyword = response.text.trim();
         console.log("🤖 Yapay Zeka Algıladı:", keyword);
 
-        // 5. Veritabanımızda adı veya açıklaması bu kelimeyi içeren ürünleri bul
         const matchedProducts = await Product.find({
             $or: [
                 { name: { $regex: keyword, $options: 'i' } },
@@ -82,7 +103,6 @@ exports.searchProductByImage = async (req, res) => {
             ]
         });
 
-        // 6. Sonucu Müşteriye (Front-End'e) Döndür
         res.status(200).json({ 
             message: `Yapay zeka görseli analiz etti. Algılanan nesne: '${keyword}'`, 
             results: matchedProducts 
